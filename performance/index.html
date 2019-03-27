@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>performance</title>
+</head>
+<body>
+    <span id="console"></span>
+    <script>
+        async function sha256(message) {
+            // encode as UTF-8
+            const msgBuffer = new TextEncoder('utf-8').encode(message);                    
+
+            // hash the message
+            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+
+            // convert ArrayBuffer to Array
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+
+            // convert bytes to hex string                  
+            const hashHex = hashArray.map(b => ('00' + b.toString(16)).slice(-2)).join('');
+            return hashHex;
+        }
+
+        var t0 = performance.now();
+        // var sha = sha256("hello world");
+        // console.log("Calculating sha256 for \"hello world\" took " + (t1 - t0) + " milliseconds.")
+        for (let index = 0; index < 10000; index++) {
+            sha256(index)
+        }
+        var t1 = performance.now();
+        document.getElementById("console").innerText = "Calculating sha256 for \"0 - 10000\" took " + (t1 - t0) + " milliseconds."
+    </script>
+</body>
+</html>
