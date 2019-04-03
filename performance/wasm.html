@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>performance wasm</title>
+</head>
+<body>
+    <span id="console"></span>
+    <script>
+        function loadWebAssembly(fileName) {
+            return fetch(fileName)
+                .then(response => response.arrayBuffer())
+                .then(bits => WebAssembly.compile(bits))
+                .then(module => { return new WebAssembly.Instance(module) });
+        };
+
+        loadWebAssembly('add.wasm').then(instance => {
+            let add = instance.exports._Z3addi;
+
+            var t0 = performance.now();
+            for (let index = 0; index < 10000; index++) {
+                add(index, index)
+            }
+            var t1 = performance.now();
+            document.getElementById("console").innerText = "Adding index+index for \"0 - 10000\" took " + (t1 - t0) + " milliseconds."
+        });
+    </script>
+</body>
+</html>
