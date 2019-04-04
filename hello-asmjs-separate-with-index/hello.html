@@ -1414,7 +1414,7 @@ function intArrayToString(array) {
   return ret.join('');
 }
 
-    var filename = 'index.asm.js';
+    var filename = 'hello.asm.js';
     var fileBytes = tryParseAsDataURI(filename);
     var script = document.createElement('script');
     if (fileBytes) {
@@ -1426,7 +1426,7 @@ function intArrayToString(array) {
       setTimeout(function() {
         
           var script = document.createElement('script');
-          script.src = "index.js";
+          script.src = "hello.js";
           document.body.appendChild(script);
 
       }, 1); // delaying even 1ms is enough to allow compilation memory to be reclaimed
