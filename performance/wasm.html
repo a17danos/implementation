@@ -9,6 +9,22 @@
 <body>
     <span id="console"></span>
     <script>
+
+        Array.prototype.arithmeticMean = function(){
+            return this.reduce(function(sum, value){
+                return sum + value
+            }, 0) / this.length
+        }
+
+        Array.prototype.standardDeviation = function(sample = true) {
+            let average = this.arithmeticMean()
+            return Math.sqrt(this.map(function(value) {
+                return Math.pow(value - average, 2)
+            }).reduce(function(sum, value){
+                return sum + value
+            }, 0) / (this.length - (sample ? 1 : 0)))
+        }
+
         function loadWebAssembly(fileName) {
             return fetch(fileName)
                 .then(response => response.arrayBuffer())
@@ -16,15 +32,21 @@
                 .then(module => { return new WebAssembly.Instance(module) });
         };
 
-        loadWebAssembly('add.wasm').then(instance => {
-            let add = instance.exports._Z3addi;
+        loadWebAssembly('add2.wasm').then(instance => {
+            let add = instance.exports._Z3addii;
+            let values = []
+            let times = []
 
-            var t0 = performance.now();
-            for (let index = 0; index < 10000; index++) {
-                add(index, index)
+            for (let index = 0; index < 100; index++) {
+                var t0 = performance.now()
+                let value = add(index, index)
+                var t1 = performance.now()
+                values.push(add(index, index)) // If not store in variable the execution also measures adding to array
+                times.push(t1 - t0)
             }
-            var t1 = performance.now();
-            document.getElementById("console").innerText = "Adding index+index for \"0 - 10000\" took " + (t1 - t0) + " milliseconds."
+
+            let console = document.getElementById("console")
+            console.innerText = `[${values.join(', ')}], [${times.join(', ')}], n=${values.length}, m=${times.arithmeticMean()}, s=${times.standardDeviation()}\n`
         });
     </script>
 </body>
