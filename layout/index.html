@@ -13,10 +13,7 @@
             display: inline-block;
             margin-top: 12px;
         }
-        .visible {
-            display: table-cell;
-        }
-        .hidden {
+        .value {
             display: none;
         }
     </style>
@@ -44,35 +41,22 @@
         }
 
         function toggleValues() {
-            const showAllValues = 'show all values';
-            const hideMostValues = 'hide most values';
-
+            var text = 'show all values';
+            var display = 'none';
             let button = document.getElementById('toggleValues');
-            if (button.innerText == showAllValues) {
-                button.innerText = hideMostValues;
-            } else {
-                button.innerText = showAllValues;
+            if (button.innerText == text) {
+                text = 'hide most values';
+                display = 'table-cell';
             }
-            let visible = Array.from(document.getElementsByClassName('visible'));
-            let hidden = Array.from(document.getElementsByClassName('hidden'));
-            visible.forEach(element => {
-                element.classList.remove('visible');
-            });
-            hidden.forEach(element => {
-                element.classList.remove('hidden');
-            });
-            visible.forEach(element => {
-                element.classList.add('hidden');
-            });
-            hidden.forEach(element => {
-                element.classList.add('visible');
+            button.innerText = text;            
+            Array.from(document.getElementsByClassName('value')).forEach(element => {                element.style.display = display;
             });
         }
 
         function header() {
-            var header = '<tr><th style="white-space:nowrap;">use case</th><th>best</th><th class="visible">&hellip;</th>';
+            var header = '<tr><th style="white-space:nowrap;">use case</th><th>best</th>';
             for (let i = 1; i < iterations - 1; i++) {
-                header += `<th class="hidden">${i+1}</th>`;
+                header += `<th class="value">${i+1}</th>`;
             } 
             header += '<th>worst</th><th>avg.</th><th>st.dev</th></tr>';
             return header;
@@ -80,9 +64,9 @@
 
         function row(name, values) {
             values.sort();
-            var row = `<tr><td>${name}</td><td>${values[0]}</td><td class="visible">&hellip;</td>`;
+            var row = `<tr><td>${name}</td><td>${values[0]}</td>`;
             for (let i = 1; i < iterations - 1; i++) {
-                row += '<td class="hidden">'+values[i]+'</td>';
+                row += '<td class="value">'+values[i]+'</td>';
             }
             row += `<td>${values[values.length-1]}</td><td>${values.arithmeticMean()}</td><td>${values.standardDeviation()}</td></tr>`;
             return row;
