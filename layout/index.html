@@ -54,7 +54,7 @@
         }
 
         function header() {
-            var header = '<tr><th style="white-space:nowrap;">use case</th><th>best</th>';
+            var header = '<tr><th style="white-space:nowrap;">use case</th><th>tech.</th><th>best</th>';
             for (let i = 1; i < iterations - 1; i++) {
                 header += `<th class="value">${i+1}</th>`;
             } 
@@ -62,9 +62,9 @@
             return header;
         }
 
-        function row(name, values) {
+        function row(name, tech, values) {
             values.sort();
-            var row = `<tr><td>${name}</td><td>${values[0]}</td>`;
+            var row = `<tr><td>${name}</td><td>${tech}</td><td>${values[0]}</td>`;
             for (let i = 1; i < iterations - 1; i++) {
                 row += '<td class="value">'+values[i]+'</td>';
             }
@@ -79,11 +79,11 @@
             for (let index = 0; index < iterations; index++) {
                 values[index] = Math.random();
             }
-            table.innerHTML += row(name + '-js', values);
+            table.innerHTML += row(name, 'asm.js', values);
             for (let index = 0; index < iterations; index++) {
                 values[index] = Math.random();
             }
-            table.innerHTML += row(name + '-wasm', values);
+            table.innerHTML += row('', 'wasm', values);
         }
     </script>
 </body>

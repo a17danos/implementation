@@ -10,21 +10,6 @@
     <span id="console"></span>
     <script>
 
-        Array.prototype.arithmeticMean = function(){
-            return this.reduce(function(sum, value){
-                return sum + value
-            }, 0) / this.length
-        }
-
-        Array.prototype.standardDeviation = function(sample = true) {
-            let average = this.arithmeticMean()
-            return Math.sqrt(this.map(function(value) {
-                return Math.pow(value - average, 2)
-            }).reduce(function(sum, value){
-                return sum + value
-            }, 0) / (this.length - (sample ? 1 : 0)))
-        }
-
         function loadWebAssembly(fileName) {
             return fetch(fileName)
                 .then(response => response.arrayBuffer())
@@ -46,7 +31,7 @@
             }
 
             let console = document.getElementById("console")
-            console.innerText = `[${values.join(', ')}], [${times.join(', ')}], n=${values.length}, m=${times.arithmeticMean()}, s=${times.standardDeviation()}\n`
+            console.innerText = `[${values.join(', ')}], [${times.join(', ')}]`
         });
     </script>
 </body>
