@@ -9,15 +9,55 @@
         table {
             text-align: center;
         }
+        #toggleValues {
+            display: inline-block;
+            margin-top: 12px;
+        }
+        .visible {
+            display: table-cell;
+        }
+        .hidden {
+            display: none;
+        }
     </style>
 </head>
 <body>
     <h1>membrane</h1>
-    <table>
-        <tr><th>use case</th><th>best</th><th>...</th><th>worst</th><th>avg.</th><th>st.dev</th></tr>
-        <tr><td>one-js</td><td>123.45</td><td>...</td><td>456.78</td><td>345.56</td><td>56.77</td></tr>
-        <tr><td>one-wasm</td><td>101.35</td><td>...</td><td>345.56</td><td>234.56</td><td>45.67</td></tr>
-        <tr><td>two-js</td><td>...</td><td>...</td><td>...</td><td>...</td><td>...</td></tr>
+    <table id="table">
+        <tr><th>use case</th><th>best</th><th class="visible">&hellip;</th><th class="hidden">i1</th><th class="hidden">i1</th><th>worst</th><th>avg.</th><th>st.dev</th></tr>
+        <tr><td>one-js</td><td>123.45</td><td class="visible">&hellip;</td><td class="hidden">i2</td><td class="hidden">i2</td><td>456.78</td><td>345.56</td><td>56.77</td></tr>
+        <tr><td>one-wasm</td><td>101.35</td><td class="visible">&hellip;</td><td class="hidden">i3</td><td class="hidden">i3</td><td>345.56</td><td>234.56</td><td>45.67</td></tr>
+        <tr><td>two-js</td><td>&hellip;</td><td class="visible">&hellip;</td><td class="hidden">i4</td><td class="hidden">i4</td><td>&hellip;</td><td>&hellip;</td><td>&hellip;</td></tr>
     </table>
+    <button id="toggleValues" type="button" onclick="toggleValues()">show all values</button>
+    <script>
+        const showAllValues = 'show all values';
+        const hideMostValues = 'hide most values';
+
+        function toggleValues() {
+            let button = document.getElementById('toggleValues');
+            if (button.innerText == showAllValues) {
+                button.innerText = hideMostValues;
+            } else {
+                button.innerText = showAllValues;
+            }
+            let visible = Array.from(document.getElementsByClassName('visible'));
+            let hidden = Array.from(document.getElementsByClassName('hidden'));
+            visible.forEach(element => {
+                element.classList.remove('visible');
+            });
+            hidden.forEach(element => {
+                element.classList.remove('hidden');
+            });
+            visible.forEach(element => {
+                element.classList.add('hidden');
+            });
+            hidden.forEach(element => {
+                element.classList.add('visible');
+            });
+        }
+
+        // TODO: function that executes the script and creates new table rows
+    </script>
 </body>
 </html>
