@@ -23,18 +23,30 @@
 </head>
 <body>
     <h1>membrane</h1>
-    <table id="table">
-        <tr><th>use case</th><th>best</th><th class="visible">&hellip;</th><th class="hidden">i1</th><th class="hidden">i1</th><th>worst</th><th>avg.</th><th>st.dev</th></tr>
-        <tr><td>one-js</td><td>123.45</td><td class="visible">&hellip;</td><td class="hidden">i2</td><td class="hidden">i2</td><td>456.78</td><td>345.56</td><td>56.77</td></tr>
-        <tr><td>one-wasm</td><td>101.35</td><td class="visible">&hellip;</td><td class="hidden">i3</td><td class="hidden">i3</td><td>345.56</td><td>234.56</td><td>45.67</td></tr>
-        <tr><td>two-js</td><td>&hellip;</td><td class="visible">&hellip;</td><td class="hidden">i4</td><td class="hidden">i4</td><td>&hellip;</td><td>&hellip;</td><td>&hellip;</td></tr>
-    </table>
+    <table id="table"></table>
     <button id="toggleValues" type="button" onclick="toggleValues()">show all values</button>
     <script>
-        const showAllValues = 'show all values';
-        const hideMostValues = 'hide most values';
+        const iterations = 120;
+
+        Array.prototype.arithmeticMean = function(){
+            return this.reduce(function(sum, value){
+                return sum + value
+            }, 0) / this.length
+        }
+
+        Array.prototype.standardDeviation = function(sample = true) {
+            let average = this.arithmeticMean()
+            return Math.sqrt(this.map(function(value) {
+                return Math.pow(value - average, 2)
+            }).reduce(function(sum, value){
+                return sum + value
+            }, 0) / (this.length - (sample ? 1 : 0)))
+        }
 
         function toggleValues() {
+            const showAllValues = 'show all values';
+            const hideMostValues = 'hide most values';
+
             let button = document.getElementById('toggleValues');
             if (button.innerText == showAllValues) {
                 button.innerText = hideMostValues;
@@ -57,7 +69,38 @@
             });
         }
 
-        // TODO: function that executes the script and creates new table rows
+        function header() {
+            var header = '<tr><th style="white-space:nowrap;">use case</th><th>best</th><th class="visible">&hellip;</th>';
+            for (let i = 1; i < iterations - 1; i++) {
+                header += `<th class="hidden">${i+1}</th>`;
+            } 
+            header += '<th>worst</th><th>avg.</th><th>st.dev</th></tr>';
+            return header;
+        }
+
+        function row(name, values) {
+            values.sort();
+            var row = `<tr><td>${name}</td><td>${values[0]}</td><td class="visible">&hellip;</td>`;
+            for (let i = 1; i < iterations - 1; i++) {
+                row += '<td class="hidden">'+values[i]+'</td>';
+            }
+            row += `<td>${values[values.length-1]}</td><td>${values.arithmeticMean()}</td><td>${values.standardDeviation()}</td></tr>`;
+            return row;
+        }
+
+        let table = document.getElementById('table')
+        table.innerHTML += header();
+        for (let name = 0; name < 5; name++) {
+            var values = [];
+            for (let index = 0; index < iterations; index++) {
+                values[index] = Math.random();
+            }
+            table.innerHTML += row(name + '-js', values);
+            for (let index = 0; index < iterations; index++) {
+                values[index] = Math.random();
+            }
+            table.innerHTML += row(name + '-wasm', values);
+        }
     </script>
 </body>
 </html>
