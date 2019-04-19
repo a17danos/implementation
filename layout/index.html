@@ -9,11 +9,11 @@
         table {
             text-align: center;
         }
-        #toggleAllTimes {
+        button {
             display: inline-block;
             margin-top: 12px;
         }
-        .time {
+        .data {
             display: none;
         }
     </style>
@@ -21,8 +21,8 @@
 <body>
     <h1>membrane</h1>
     <table id="table"></table>
-    <button id="toggleAllResults" type="button" onclick="toggleAllResults();">toggle results</button>
-    <button id="toggleAllTimes" type="button" onclick="toggleAllTimes();">show data</button>
+    <button type="button" onclick="toggleAllResults();">toggle results</button>
+    <button type="button" onclick="toggleAllData();">toggle data</button>
     <script>
         const iterations = 4; //120;
         const useCases = ['one', 'two', 'three', 'four', 'five'];
@@ -63,16 +63,14 @@
             toggleDisplay(rows, indices);
         }
 
-        function toggleAllTimes() {
-            var text = 'show data';
-            var display = 'none';
-            let button = document.getElementById('toggleAllTimes');
-            if (button.innerText == text) {
-                text = 'show statistics';
-                display = 'table-cell';
+        function toggleAllData() {
+            var display = 'table-cell';
+            let elements = document.getElementsByClassName('data');
+            if (elements[0].style.display == display) {
+                display = 'none';
             }
-            button.innerText = text;            
-            Array.from(document.getElementsByClassName('time')).forEach(element => {                element.style.display = display;
+            Array.from(elements).forEach(element => {
+                element.style.display = display;
             });
         }
 
@@ -83,7 +81,7 @@
         function header() {
             var header = '<tr><th style="white-space:nowrap;">use case</th><th>tech.</th><th>best</th>';
             for (let i = 1; i < iterations - 1; i++) {
-                header += `<th class="time">${i+1}</th>`;
+                header += `<th class="data">${i+1}</th>`;
             } 
             header += '<th>worst</th><th>avg.</th><th>st.dev</th></tr>';
             table.innerHTML += header;
@@ -93,7 +91,7 @@
             values.sort();
             var row = `<tr><td>${name}</td><td>${tech}</td><td>${values[0]}</td>`;
             for (let i = 1; i < iterations - 1; i++) {
-                row += '<td class="time">'+values[i]+'</td>';
+                row += '<td class="data">'+values[i]+'</td>';
             }
             var arithmeticMean = stats ? values.arithmeticMean() : "";
             var standardDeviation = stats ? values.standardDeviation() : "";
@@ -103,19 +101,19 @@
 
         header();
         for (let name = 0; name < useCases.length; name++) {
-            var times = [];
+            var data = [];
             var results = [];
             for (let index = 0; index < iterations; index++) {
-                times[index] = Math.random();
-                results[index] = `"${times[index].toFixed(2)}"`;
+                data[index] = Math.random();
+                results[index] = `"${data[index].toFixed(2)}"`;
             }
-            row(useCases[name], 'asm.js', times);
+            row(useCases[name], 'asm.js', data);
             row('', '', results, false);
             for (let index = 0; index < iterations; index++) {
-                times[index] = Math.random();
-                results[index] = `"${times[index].toFixed(2)}"`;
+                data[index] = Math.random();
+                results[index] = `"${data[index].toFixed(2)}"`;
             }
-            row('', 'wasm', times);
+            row('', 'wasm', data);
             row('', '', results, false);
         }
 
