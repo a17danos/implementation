@@ -9,11 +9,11 @@
         table {
             text-align: center;
         }
-        #toggleValues {
+        #toggleAllTimes {
             display: inline-block;
             margin-top: 12px;
         }
-        .value {
+        .time {
             display: none;
         }
     </style>
@@ -21,9 +21,12 @@
 <body>
     <h1>membrane</h1>
     <table id="table"></table>
-    <button id="toggleValues" type="button" onclick="toggleValues()">show all values</button>
+    <button id="toggleAllResults" type="button" onclick="toggleAllResults();">toggle results</button>
+    <button id="toggleAllTimes" type="button" onclick="toggleAllTimes();">show data</button>
     <script>
-        const iterations = 120;
+        const iterations = 4; //120;
+        const useCases = ['one', 'two', 'three', 'four', 'five'];
+        let table = document.getElementById('table')
 
         Array.prototype.arithmeticMean = function(){
             return this.reduce(function(sum, value){
@@ -40,51 +43,83 @@
             }, 0) / (this.length - (sample ? 1 : 0)))
         }
 
-        function toggleValues() {
-            var text = 'show all values';
+        Array.range = function(from, to, step = 1){
+            var array = [from];
+            while(from + step <= to){
+                array[array.length] = from += step;
+            }
+            return array;
+        }
+
+        function toggleDisplay(array, indices) {
+            for (var index = 0; index < indices.length; index++) {
+                let style = array[indices[index]].style;
+                style.display = (style.display) ? '' : 'none';
+            }
+        }
+
+        function toggleRows(indices) {
+            var rows = table.getElementsByTagName('tr');
+            toggleDisplay(rows, indices);
+        }
+
+        function toggleAllTimes() {
+            var text = 'show data';
             var display = 'none';
-            let button = document.getElementById('toggleValues');
+            let button = document.getElementById('toggleAllTimes');
             if (button.innerText == text) {
-                text = 'hide most values';
+                text = 'show statistics';
                 display = 'table-cell';
             }
             button.innerText = text;            
-            Array.from(document.getElementsByClassName('value')).forEach(element => {                element.style.display = display;
+            Array.from(document.getElementsByClassName('time')).forEach(element => {                element.style.display = display;
             });
+        }
+
+        function toggleAllResults() {
+            toggleRows(Array.range(2,useCases.length * 4,2));
         }
 
         function header() {
             var header = '<tr><th style="white-space:nowrap;">use case</th><th>tech.</th><th>best</th>';
             for (let i = 1; i < iterations - 1; i++) {
-                header += `<th class="value">${i+1}</th>`;
+                header += `<th class="time">${i+1}</th>`;
             } 
             header += '<th>worst</th><th>avg.</th><th>st.dev</th></tr>';
-            return header;
+            table.innerHTML += header;
         }
 
-        function row(name, tech, values) {
+        function row(name, tech, values, stats = true) {
             values.sort();
             var row = `<tr><td>${name}</td><td>${tech}</td><td>${values[0]}</td>`;
             for (let i = 1; i < iterations - 1; i++) {
-                row += '<td class="value">'+values[i]+'</td>';
+                row += '<td class="time">'+values[i]+'</td>';
             }
-            row += `<td>${values[values.length-1]}</td><td>${values.arithmeticMean()}</td><td>${values.standardDeviation()}</td></tr>`;
-            return row;
+            var arithmeticMean = stats ? values.arithmeticMean() : "";
+            var standardDeviation = stats ? values.standardDeviation() : "";
+            row += `<td>${values[values.length-1]}</td><td>${arithmeticMean}</td><td>${standardDeviation}</td></tr>`;
+            table.innerHTML += row;
         }
 
-        let table = document.getElementById('table')
-        table.innerHTML += header();
-        for (let name = 0; name < 5; name++) {
-            var values = [];
+        header();
+        for (let name = 0; name < useCases.length; name++) {
+            var times = [];
+            var results = [];
             for (let index = 0; index < iterations; index++) {
-                values[index] = Math.random();
+                times[index] = Math.random();
+                results[index] = `"${times[index].toFixed(2)}"`;
             }
-            table.innerHTML += row(name, 'asm.js', values);
+            row(useCases[name], 'asm.js', times);
+            row('', '', results, false);
             for (let index = 0; index < iterations; index++) {
-                values[index] = Math.random();
+                times[index] = Math.random();
+                results[index] = `"${times[index].toFixed(2)}"`;
             }
-            table.innerHTML += row('', 'wasm', values);
+            row('', 'wasm', times);
+            row('', '', results, false);
         }
+
+        toggleAllResults();
     </script>
 </body>
 </html>
