@@ -28,6 +28,14 @@
         const useCases = ['one', 'two', 'three', 'four', 'five'];
         let table = document.getElementById('table')
 
+        Array.prototype.best = function() {
+            return Math.min(...this);
+        }
+
+        Array.prototype.worst = function() {
+            return Math.max(...this);
+        }
+
         Array.prototype.arithmeticMean = function(){
             return this.reduce(function(sum, value){
                 return sum + value
@@ -79,23 +87,24 @@
         }
 
         function header() {
-            var header = '<tr><th style="white-space:nowrap;">use case</th><th>tech.</th><th>best</th>';
-            for (let i = 1; i < iterations - 1; i++) {
+            var header = '<tr><th style="white-space:nowrap;">use case</th><th>tech.</th>';
+            for (let i = 0; i < iterations; i++) {
                 header += `<th class="data">${i+1}</th>`;
             } 
-            header += '<th>worst</th><th>avg.</th><th>st.dev</th></tr>';
+            header += '<th>best</th><th>worst</th><th>avg.</th><th>st.dev</th></tr>';
             table.innerHTML += header;
         }
 
         function row(name, tech, values, stats = true) {
-            values.sort();
-            var row = `<tr><td>${name}</td><td>${tech}</td><td>${values[0]}</td>`;
-            for (let i = 1; i < iterations - 1; i++) {
+            var row = `<tr><td>${name}</td><td>${tech}</td>`;
+            for (let i = 0; i < iterations; i++) {
                 row += '<td class="data">'+values[i]+'</td>';
             }
-            var arithmeticMean = stats ? values.arithmeticMean() : "";
-            var standardDeviation = stats ? values.standardDeviation() : "";
-            row += `<td>${values[values.length-1]}</td><td>${arithmeticMean}</td><td>${standardDeviation}</td></tr>`;
+            var best = stats ? values.best() : "-";
+            var worst = stats ? values.worst() : "-";
+            var arithmeticMean = stats ? values.arithmeticMean() : "-";
+            var standardDeviation = stats ? values.standardDeviation() : "-";
+            row += `<td>${best}</td><td>${worst}</td><td>${arithmeticMean}</td><td>${standardDeviation}</td></tr>`;
             table.innerHTML += row;
         }
 
