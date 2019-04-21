@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>performance wasm</title>
+</head>
+<body>
+    <span id="console"></span>
+    <script>
+
+        function loadWebAssembly(fileName) {
+            return fetch(fileName)
+                .then(response => response.arrayBuffer())
+                .then(bits => WebAssembly.compile(bits))
+                .then(module => { return new WebAssembly.Instance(module) });
+        };
+
+        loadWebAssembly('math.wasm').then(instance => {
+            let console = document.getElementById("console");
+            console.innerText += calcAdd(instance.exports.add);
+        });
+
+        function calcAdd(add) {
+            let values = []
+            let times = []
+
+            for (let index = 0; index < 4; index++) {
+                var t0 = performance.now()
+                let value = add(index, index)
+                var t1 = performance.now()
+                values.push(add(index, index)) // If not store in variable the execution also measures adding to array
+                times.push(t1 - t0)
+            }
+
+            return `[${values.join(', ')}], [${times.join(', ')}]`
+        }
+
+        function calcFact(fact) {
+            let values = []
+            let times = []
+
+            for (let index = 0; index < 4; index++) {
+                var t0 = performance.now()
+                let value = fact(index, index)
+                var t1 = performance.now()
+                values.push(fact(index, index)) // If not store in variable the execution also measures adding to array
+                times.push(t1 - t0)
+            }
+
+            return `[${values.join(', ')}], [${times.join(', ')}]`
+        }
+    </script>
+</body>
+</html>
