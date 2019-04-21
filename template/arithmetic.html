@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+</head>
+<body>
+    Use the console to invoke exported functions.
+    <script>
+        let pathname = window.location.pathname;
+        var filename = pathname.substring(pathname.lastIndexOf('/') + 1, pathname.lastIndexOf('.'));
+        let wasm = typeof WebAssembly === 'object';
+        if (wasm) {
+            console.log('wasm enabled');
+        } else {
+            console.log('wasm disabled');
+            filename += 'ASM';
+        }
+        let element = document.createElement('script')
+        element.setAttribute('type','text/javascript')
+        element.setAttribute('src', `${filename}.js`)
+        document.getElementsByTagName('head')[0].appendChild(element)
+    </script>
+</body>
+</html>
