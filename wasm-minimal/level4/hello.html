@@ -1,0 +1,21 @@
+<html>
+<head>
+<script>
+  const status = ('WebAssembly' in window) ? 'enabled' : 'disabled';
+  console.log(`wasm ${status}`);
+</script>
+<script>
+(async () => {
+  const fetchPromise = fetch('hello.wasm');
+  const {instance} = await WebAssembly.instantiateStreaming(fetchPromise);
+  console.log(instance.exports._fib());
+  console.log(instance.exports._fib2());
+})();
+</script>
+<script src="hello.asm.js"></script>
+<script>
+  console.log(_fib());
+  console.log(_fib2());
+</script>
+</head>
+</html>

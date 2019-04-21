@@ -1,0 +1,29 @@
+<html>
+<head>
+<script>
+(async () => {
+  const config = {
+    env: {
+        __memory_base: 0,
+        // memoryBase: 0,
+        __table_base: 0,
+        // tableBase: 0,
+        memory: new WebAssembly.Memory({
+            initial: 256,
+        }),
+        table: new WebAssembly.Table({
+            initial: 0,
+            element: 'anyfunc',
+        }),
+    }
+  }
+  // works with the changes made before and when using 'emrun --no_browser --port 8000 .' as web server
+  // see https://stackoverflow.com/questions/52239924/webassembly-instantiatestreaming-wrong-mime-type, and https://github.com/mdn/webassembly-examples/issues/5 (Luke Wagners comment did not work at least not with the versions I had)
+  const fetchPromise = fetch('hello.wasm');
+  const {instance} = await WebAssembly.instantiateStreaming(fetchPromise, config);
+  console.log(instance.exports._fib());
+  console.log(instance.exports._fib2());
+})();
+</script>
+</head>
+</html>
