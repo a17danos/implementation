@@ -5,59 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Membrane</title>
-    <style>
-        table {
-            text-align: center;
-        }
-        button {
-            display: inline-block;
-            margin-top: 12px;
-        }
-        .data {
-            display: none;
-        }
-    </style>
+
 </head>
 <body>
     <h1>membrane</h1>
-    <table id="table"></table>
-    <button type="button" onclick="toggleAllResults();">toggle results</button>
-    <button type="button" onclick="toggleAllData();">toggle data</button>
     <script>
         const iterations = 4; //120;
         const useCases = ['one', 'two', 'three', 'four', 'five'];
         let table = document.getElementById('table')
-
-        Array.prototype.best = function() {
-            return Math.min(...this);
-        }
-
-        Array.prototype.worst = function() {
-            return Math.max(...this);
-        }
-
-        Array.prototype.arithmeticMean = function(){
-            return this.reduce(function(sum, value){
-                return sum + value
-            }, 0) / this.length
-        }
-
-        Array.prototype.standardDeviation = function(sample = true) {
-            let average = this.arithmeticMean()
-            return Math.sqrt(this.map(function(value) {
-                return Math.pow(value - average, 2)
-            }).reduce(function(sum, value){
-                return sum + value
-            }, 0) / (this.length - (sample ? 1 : 0)))
-        }
-
-        Array.range = function(from, to, step = 1){
-            var array = [from];
-            while(from + step <= to){
-                array[array.length] = from += step;
-            }
-            return array;
-        }
 
         function toggleDisplay(array, indices) {
             for (var index = 0; index < indices.length; index++) {

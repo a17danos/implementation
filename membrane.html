@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>membrane</title>
+    <style>
+        table {
+            text-align: center;
+            white-space: nowrap;
+        }
+        tr:nth-child(even) {
+            background: #f0f0f0;
+        }
+    </style>
+    <script>
+        Array.prototype.best = function() {
+            return Math.min(...this);
+        }
+
+        Array.prototype.worst = function() {
+            return Math.max(...this);
+        }
+
+        Array.prototype.arithmeticMean = function() {
+            return this.reduce(function(sum, value) {
+                return sum + value;
+            }, 0) / this.length;
+        }
+
+        Array.prototype.standardDeviation = function(sample = true) {
+            let average = this.arithmeticMean();
+            return Math.sqrt(this.map(function(value) {
+                return Math.pow(value - average, 2);
+            }).reduce(function(sum, value) {
+                return sum + value;
+            }, 0) / (this.length - (sample ? 1 : 0)));
+        }
+
+        Array.range = function(from, to, step = 1) {
+            var array = [from];
+            while(from + step <= to) {
+                array[array.length] = from += step;
+            }
+            return array;
+        }
+    </script>
+    <script>
+        const executions = 5; // 120
+
+        function row(name, values, element = 'td') {
+            var tr = document.createElement('tr');
+            var tx = document.createElement(element);
+            tx.appendChild(document.createTextNode(name));
+            tr.appendChild(tx);
+            for (let index = 0; index < values.length; index++) {
+                let value = values[index];
+                tx = document.createElement(element);
+                if (element == 'td') {
+                    tx.classList.add(name+index);
+                }
+                tx.appendChild(document.createTextNode(value));
+                tr.appendChild(tx);
+            }
+            return tr;
+        }
+
+        // temporary for testing, invoke with 'await sleep(ms)'
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+    </script>
+</head>
+<body>
+    <h1 id="membrane">membrane</h1>
+    <h2>statistics</h2>
+    <table id="statistics">
+        <tr><th id="name">use case</th><th>best</th><th>worst</th><th>avg.</th><th>st.dev.</th></tr>
+    </table>
+    <h2>data</h2>
+    <table id="data"></table>
+    <script>
+        const membrane = document.getElementById('membrane');
+        const statistics = document.getElementById('statistics');
+        const data = document.getElementById('data');
+
+        membrane.innerText = 'membrane (running...)';
+        data.appendChild(row(document.getElementById('name').innerText, Array.range(1, executions, 1), 'th'));
+
+        async function execute() { // required for sleep()
+            const names = ['one-asmjs', 'one-wasm', 'two-asmjs', 'two-wasm', 'three-asmjs', 'three-wasm'];
+            // const values = Array.range(1, executions, 1);
+            for (let i = 0; i < names.length; i++) {
+                const name = names[i];
+                var array = Array(executions);
+                for (let index = 0; index < array.length; index++) {
+                    let time = Math.random() * 1000;
+                    await sleep(time); // does not work with forEach
+                    array[index] = time;
+                }
+                // console.log(array);
+                data.appendChild(row(name, array));
+                statistics.appendChild(row(name, [array.best(), array.worst(), array.arithmeticMean(), array.standardDeviation()]));
+            };
+
+            membrane.innerText = 'membrane';
+        }
+
+        execute();
+    </script>
+</body>
+</html>
